@@ -97,6 +97,7 @@ sudo make modules_install
 sudo make install
 •	Reboot the kernel 
 •	After rebooting the kernel we ssh into the inner VM 
+sudo qemu-system-x86_64 -enable-kvm -hda jammy-server-cloudimg-amd64.img -m 512 -nographic
 •	We can open another terminal of the outer VM while the inner VM is running and use the command : 
                      dmesg | grep "KVM Exit"  
 to check for exits and the counts.
