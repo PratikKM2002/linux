@@ -135,6 +135,7 @@ On the other hand, the least frequent exit types are related to exceptional or e
  These types of exits are rare and typically happen when the inner VM encounters critical errors or halts. 
 Since these conditions don’t occur frequently during normal operations or the boot process, these exit types are much less common compared to the others involved in hardware initialization and memory management.
 
+![App Screenshot](https://github.com/PratikKM2002/linux/tree/master/screenshots)
 
 
 
