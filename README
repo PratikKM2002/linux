@@ -97,7 +97,9 @@ sudo make modules_install
 sudo make install
 •	Reboot the kernel 
 •	After rebooting the kernel we ssh into the inner VM 
-•	We can open another terminal of the outer VM while the inner VM is running and use the command : dmesg | grep "KVM Exit"  to check for exits and the counts.
+•	We can open another terminal of the outer VM while the inner VM is running and use the command : 
+                     dmesg | grep "KVM Exit"  
+to check for exits and the counts.
 
 Step  5:
 
@@ -112,16 +114,25 @@ to commit it to the repository
 
 3.	Comment on the frequency of exits – does the number of exits increase at a stable rate? Or are there more exits performed during certain VM operations? Approximately how many exits does a full VM boot entail?
 
-Ans. During the boot process of the inner VM running within the outer VM, I noticed that the frequency of exits does not increase at a steady rate. Instead, there are periods where the number of exits spikes, especially during certain operations that involve heavy interaction with the hypervisor. For instance, during hardware initialization and memory mapping, the inner VM generates a significant number of exits. This is because the VM frequently makes CPUID queries to check CPU features, writes to model-specific registers through MSR_WRITE, and handles address translations using EPT_VIOLATION. These stages are resource-intensive, which leads to an increase in the number of exits.
+Ans. During the boot process of the inner VM running within the outer VM, I noticed that the frequency of exits does not increase at a steady rate. 
+Instead, there are periods where the number of exits spikes, especially during certain operations that involve heavy interaction with the hypervisor. 
+For instance, during hardware initialization and memory mapping, the inner VM generates a significant number of exits. This is because the VM frequently makes CPUID queries to check CPU features, writes to model-specific registers through MSR_WRITE, and handles address translations using EPT_VIOLATION. 
+These stages are resource-intensive, which leads to an increase in the number of exits.
 
-Once the inner VM has completed these initialization tasks and begins its normal operations, the frequency of exits starts to stabilize. Most of the exits occur during the earlier stages of the boot process, and the number of exits drops significantly as the VM continues running in its regular state.
+Once the inner VM has completed these initialization tasks and begins its normal operations, the frequency of exits starts to stabilize. 
+Most of the exits occur during the earlier stages of the boot process, and the number of exits drops significantly as the VM continues running in its regular state.
 
-On average, a full VM boot generates thousands of exits. Lightweight operating systems might generate around 5,000 to 10,000 exits, while more complex systems could see upwards of 50,000 exits. This demonstrates that the boot process is a particularly exit-heavy phase, primarily due to the frequent CPUID, MSR_WRITE, and EPT_VIOLATION exits that happen during hardware setup and memory management.
+On average, a full VM boot generates thousands of exits. Lightweight operating systems might generate around 5,000 to 10,000 exits, while more complex systems could see upwards of 50,000 exits. 
+This demonstrates that the boot process is a particularly exit-heavy phase, primarily due to the frequent CPUID, MSR_WRITE, and EPT_VIOLATION exits that happen during hardware setup and memory management.
 
 
 4.	Of the exit types, which are the most frequent? Least?
-Ans. The most frequent exit types I observed are CPUID, MSR_WRITE, and EPT_VIOLATION. CPUID exits occur often as the inner VM queries the CPU features during its boot process. MSR_WRITE exits are common because the inner VM frequently writes to model-specific registers (MSRs) to configure its processor. EPT_VIOLATION exits also happen frequently as the inner VM handles memory mapping and translates virtual addresses to physical addresses.
-On the other hand, the least frequent exit types are related to exceptional or error conditions, such as TRIPLE_FAULT or HLT. These types of exits are rare and typically happen when the inner VM encounters critical errors or halts. Since these conditions don’t occur frequently during normal operations or the boot process, these exit types are much less common compared to the others involved in hardware initialization and memory management.
+Ans. The most frequent exit types I observed are CPUID, MSR_WRITE, and EPT_VIOLATION. CPUID exits occur often as the inner VM queries the CPU features during its boot process. 
+MSR_WRITE exits are common because the inner VM frequently writes to model-specific registers (MSRs) to configure its processor. EPT_VIOLATION exits also happen frequently as the inner VM handles memory mapping and translates virtual addresses to physical addresses.
+
+On the other hand, the least frequent exit types are related to exceptional or error conditions, such as TRIPLE_FAULT or HLT.
+ These types of exits are rare and typically happen when the inner VM encounters critical errors or halts. 
+Since these conditions don’t occur frequently during normal operations or the boot process, these exit types are much less common compared to the others involved in hardware initialization and memory management.
 
 
 
